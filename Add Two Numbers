@@ -1,0 +1,52 @@
+include <stdio.h>
+#include <stdlib.h>
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+struct ListNode* addTwoNumbers(struct ListNode* l1, struct ListNode* l2) {
+    // Create a dummy node on the stack to anchor our new list
+    struct ListNode dummyHead;
+    dummyHead.val = 0;
+    dummyHead.next = NULL;
+    
+    struct ListNode* tail = &dummyHead;
+    int carry = 0;
+    
+    // Loop runs if l1 has nodes, l2 has nodes, or there is a leftover carry
+    while (l1 != NULL || l2 != NULL || carry != 0) {
+        int sum = carry;
+        
+        // Extract value from l1 if it exists
+        if (l1 != NULL) {
+            sum += l1->val;
+            l1 = l1->next;
+        }
+        
+        // Extract value from l2 if it exists
+        if (l2 != NULL) {
+            sum += l2->val;
+            l2 = l2->next;
+        }
+        
+        // Calculate the new carry and the single digit for the current node
+        carry = sum / 10;
+        int digit = sum % 10;
+        
+        // Allocate memory for the new node using C-style malloc
+        struct ListNode* newNode = (struct ListNode*)malloc(sizeof(struct ListNode));
+        newNode->val = digit;
+        newNode->next = NULL;
+        
+        // Attach the new node to the list and advance the tail pointer
+        tail->next = newNode;
+        tail = tail->next;
+    }
+    
+    // Return the actual head node, skipping our dummy node
+    return dummyHead.next;
+}
