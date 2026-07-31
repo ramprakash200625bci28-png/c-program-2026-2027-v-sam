@@ -1,0 +1,110 @@
+#include <stdlib.h>
+#include <string.h>
+
+#define HASH_SIZE 2003
+
+typedef struct HashNode {
+    char* word;
+    int id;
+    int expected_count;
+    struct HashNode* next;
+} HashNode;
+unsigned int hash_word(const char* str, int len) {
+    unsigned int hash = 5381;
+    for (int i = 0; i < len; i++) {
+        hash = ((hash << 5) + hash) + str[i];
+    }
+    return hash % HASH_SIZE;
+}
+int get_word_id(HashNode** table, const char* str, int len, int* unique_id_counter, int* expected_counts) {
+    unsigned int index = hash_word(str, len);
+    HashNode* curr = table[index];  
+    while (curr != NULL) {
+        if (strncmp(curr->word, str, len) == 0 && curr->word[len] == '\0') {
+            return curr->id;
+        }
+        curr = curr->next;
+    }    
+    return -1;
+}
+int* findSubstring(char* s, char** words, int wordsSize, int* returnSize) {
+    *returnSize = 0;
+    if (s == NULL || words == NULL || wordsSize == 0) return NULL;
+    
+    int s_len = strlen(s);
+    int word_len = strlen(words[0]);
+    int total_words_len = wordsSize * word_len;
+    
+    if (s_len < total_words_len) return NULL;
+    int* result = (int*)malloc(s_len * sizeof(int));
+    HashNode* hashTable[HASH_SIZE] = {NULL};
+    int expected_counts[5005] = {0};
+    int unique_id_counter = 0;
+    
+    for (int i = 0; i < wordsSize; i++) {
+        unsigned int index = hash_word(words[i], word_len);
+        HashNode* curr = hashTable[index];
+        HashNode* found = NULL;
+        
+        while (curr != NULL) {
+            if (strcmp(curr->word, words[i]) == 0) {
+                found = curr;
+                break;
+            }
+            curr = curr->next;
+        }
+        
+        if (found != NULL) {
+            expected_counts[found->id]++;
+        } else {
+            HashNode* newNode = (HashNode*)malloc(sizeof(HashNode));
+            newNode->word = words[i];
+            newNode->id = unique_id_counter;
+            newNode->next = hashTable[index];
+            hashTable[index] = newNode;
+            
+            expected_counts[unique_id_counter] = 1;
+            unique_id_counter++;
+        }
+    }
+    int* curr_counts = (int*)malloc(unique_id_counter * sizeof(int));
+    for (int i = 0; i < word_len; i++) {
+        int left = i;
+        int right = i;
+        int words_used = 0;
+        memset(curr_counts, 0, unique_id_counter * sizeof(int));
+        
+        while (right + word_len <= s_len) {
+            int w_id = get_word_id(hashTable, s + right, word_len, &unique_id_counter, expected_counts);
+            right += word_len;
+            
+            if (w_id != -1) {
+                curr_counts[w_id]++;
+                words_used++;
+                while (curr_counts[w_id] > expected_counts[w_id]) {
+                    int left_w_id = get_word_id(hashTable, s + left, word_len, &unique_id_counter, expected_counts);
+                    curr_counts[left_w_id]--;
+                    words_used--;
+                    left += word_len;
+                }
+                if (words_used == wordsSize) {
+                    result[(*returnSize)++] = left;
+                }
+            } else {
+                memset(curr_counts, 0, unique_id_counter * sizeof(int));
+                words_used = 0;
+                left = right;
+            }
+        }
+    }
+    for (int i = 0; i < HASH_SIZE; i++) {
+        HashNode* curr = hashTable[i];
+        while (curr != NULL) {
+            HashNode* temp = curr;
+            curr = curr->next;
+            free(temp);
+        }
+    }
+    free(curr_counts);
+    return result;
+}
