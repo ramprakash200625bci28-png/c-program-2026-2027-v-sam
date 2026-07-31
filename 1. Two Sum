@@ -1,0 +1,80 @@
+#include <stdlib.h>
+
+// Structure to represent a hash table node
+struct HashTableNode {
+    int key;
+    int value;
+    struct HashTableNode* next;
+};
+
+// Hash function to map values to bucket indices
+int hash(int key, int size) {
+    int h = key % size;
+    return h < 0 ? h + size : h;
+}
+
+// Function to insert a key-value pair into the hash table
+void insert(struct HashTableNode** hashTable, int size, int key, int value) {
+    int index = hash(key, size);
+    struct HashTableNode* newNode = (struct HashTableNode*)malloc(sizeof(struct HashTableNode));
+    newNode->key = key;
+    newNode->value = value;
+    newNode->next = hashTable[index];
+    hashTable[index] = newNode;
+}
+
+// Function to search for a key in the hash table
+struct HashTableNode* search(struct HashTableNode** hashTable, int size, int key) {
+    int index = hash(key, size);
+    struct HashTableNode* current = hashTable[index];
+    while (current != NULL) {
+        if (current->key == key) {
+            return current;
+        }
+        current = current->next;
+    }
+    return NULL;
+}
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* twoSum(int* nums, int numsSize, int target, int* returnSize) {
+    *returnSize = 2;
+    int* result = (int*)malloc(2 * sizeof(int));
+    
+    // Using a hash table size roughly proportional to input size
+    int hashSize = numsSize * 2; 
+    struct HashTableNode** hashTable = (struct HashTableNode**)calloc(hashSize, sizeof(struct HashTableNode*));
+    
+    for (int i = 0; i < numsSize; i++) {
+        int complement = target - nums[i];
+        
+        // Check if the complement already exists in the hash table
+        struct HashTableNode* found = search(hashTable, hashSize, complement);
+        if (found != NULL) {
+            result[0] = found->value; // Fixed array assignment
+            result[1] = i;
+            
+            // Free allocated hash table memory before returning
+            for (int j = 0; j < hashSize; j++) {
+                struct HashTableNode* curr = hashTable[j];
+                while (curr != NULL) {
+                    struct HashTableNode* temp = curr;
+                    curr = curr->next;
+                    free(temp);
+                }
+            }
+            free(hashTable);
+            
+            return result;
+        }
+        
+        // If not found, insert the current number and its index
+        insert(hashTable, hashSize, nums[i], i);
+    }
+    
+    free(hashTable);
+    return result;
+}
+
