@@ -1,0 +1,67 @@
+#include <string.h>
+#include <stdbool.h>
+#include <stdlib.h>
+
+bool isOneCharDiff(const char* w1, const char* w2, int wordLen) {
+    int diffCount = 0;
+    for (int i = 0; i < wordLen; i++) {
+        if (w1[i] != w2[i]) {
+            diffCount++;
+            if (diffCount > 1) return false;
+        }
+    }
+    return diffCount == 1;
+}
+
+int ladderLength(char* beginWord, char* endWord, char** wordList, int wordListSize) {
+    int wordLen = strlen(beginWord);
+    
+   
+    int endWordIdx = -1;
+    for (int i = 0; i < wordListSize; i++) {
+        if (strcmp(wordList[i], endWord) == 0) {
+            endWordIdx = i;
+            break;
+        }
+    }
+
+    if (endWordIdx == -1) return 0;
+
+    bool* visited = (bool*)calloc(wordListSize, sizeof(bool));
+
+    int* queue = (int*)malloc((wordListSize + 1) * sizeof(int));
+    int head = 0;
+    int tail = 0;
+
+    queue[tail++] = -1; 
+    
+    int level = 1; 
+
+    while (head < tail) {
+        int currentLevelSize = tail - head;
+        
+   
+        for (int i = 0; i < currentLevelSize; i++) {
+            int currIdx = queue[head++];
+            char* currWord = (currIdx == -1) ? beginWord : wordList[currIdx];
+
+            if (currIdx != -1 && strcmp(currWord, endWord) == 0) {
+                free(visited);
+                free(queue);
+                return level;
+            }
+
+            for (int j = 0; j < wordListSize; j++) {
+                if (!visited[j] && isOneCharDiff(currWord, wordList[j], wordLen)) {
+                    visited[j] = true;
+                    queue[tail++] = j; 
+                }
+            }
+        }
+        level++; 
+    }
+
+    free(visited);
+    free(queue);
+    return 0;
+}
