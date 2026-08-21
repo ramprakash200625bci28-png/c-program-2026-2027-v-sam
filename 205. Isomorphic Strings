@@ -1,0 +1,20 @@
+#include <stdbool.h>
+#include <string.h>
+
+bool isIsomorphic(char* s, char* t) {
+    int len = strlen(s);
+    int lastSeenS[256] = {0};
+    int lastSeenT[256] = {0};
+    
+    for (int i = 0; i < len; i++) {
+        unsigned char charS = (unsigned char)s[i];
+        unsigned char charT = (unsigned char)t[i];
+        if (lastSeenS[charS] != lastSeenT[charT]) {
+            return false;
+        }
+        lastSeenS[charS] = i + 1;
+        lastSeenT[charT] = i + 1;
+    }
+    
+    return true;
+}
