@@ -1,0 +1,30 @@
+#include <string.h>
+
+char* reversePrefix(char* word, char ch) {
+    int targetIndex = -1;
+    int len = strlen(word);
+
+    // 1. Find the first occurrence of character ch
+    for (int i = 0; i < len; i++) {
+        if (word[i] == ch) {
+            targetIndex = i;
+            break; // Stop at the first occurrence
+        }
+    }
+
+    // 2. If the character is found, reverse the prefix from index 0 to targetIndex
+    if (targetIndex != -1) {
+        int left = 0;
+        int right = targetIndex;
+        
+        while (left < right) {
+            char temp = word[left];
+            word[left] = word[right];
+            word[right] = temp;
+            left++;
+            right--;
+        }
+    }
+
+    return word;
+}
