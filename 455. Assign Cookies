@@ -1,0 +1,25 @@
+int compare(const void *a, const void *b) {
+    return (*(int*)a - *(int*)b);
+}
+
+int findContentChildren(int* g, int gSize, int* s, int sSize) {
+    // Step 1: Sort both the children's greed factors and the cookies' sizes
+    qsort(g, gSize, sizeof(int), compare);
+    qsort(s, sSize, sizeof(int), compare);
+    
+    int child_ptr = 0;
+    int cookie_ptr = 0;
+    
+    // Step 2: Iterate through both arrays
+    while (child_ptr < gSize && cookie_ptr < sSize) {
+        // If the cookie size satisfies the child's greed, move to the next child
+        if (s[cookie_ptr] >= g[child_ptr]) {
+            child_ptr++;
+        }
+        // Always move to the next cookie
+        cookie_ptr++;
+    }
+    
+    // The index of child_ptr represents the total number of content children
+    return child_ptr;
+}
