@@ -1,0 +1,28 @@
+#include <stdbool.h>
+
+bool checkIfExist(int* arr, int arrSize) {
+ 
+    bool seen[4001] = {false};
+    int offset = 2000;
+
+    for (int i = 0; i < arrSize; i++) {
+        int val = arr[i];
+
+
+        if (val * 2 >= -2000 && val * 2 <= 2000) {
+            if (seen[val * 2 + offset]) {
+                return true;
+            }
+        }
+
+        if (val % 2 == 0) {
+            if (seen[val / 2 + offset]) {
+                return true;
+            }
+        }
+
+        seen[val + offset] = true;
+    }
+
+    return false;
+}
