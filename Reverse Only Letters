@@ -1,0 +1,32 @@
+#include <string.h>
+#include <stdbool.h>
+
+// Helper function to check if a character is an English letter
+bool isLetter(char c) {
+    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+}
+
+char* reverseOnlyLetters(char* s) {
+    int left = 0;
+    int right = strlen(s) - 1;
+    
+    while (left < right) {
+        // Move the left pointer if it's not a letter
+        if (!isLetter(s[left])) {
+            left++;
+        }
+        // Move the right pointer if it's not a letter
+        else if (!isLetter(s[right])) {
+            right--;
+        }
+        // Both are letters, so swap them
+        else {
+            char temp = s[left];
+            s[left] = s[right];
+            s[right] = temp;
+            left++;
+            right--;
+        }
+    }
+    
+    return s;
