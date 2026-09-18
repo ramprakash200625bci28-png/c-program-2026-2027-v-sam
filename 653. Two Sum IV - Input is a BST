@@ -1,0 +1,48 @@
+#include <stdbool.h>
+#include <stdlib.h>
+
+// Definition for a binary tree node (already provided by the platform, do not redefine)
+/*
+struct TreeNode {
+    int val;
+    struct TreeNode *left;
+    struct TreeNode *right;
+};
+*/
+
+// Helper function to perform an in-order traversal and extract values into an array
+void inorder(struct TreeNode* root, int* arr, int* size) {
+    if (root == NULL) return;
+    
+    inorder(root->left, arr, size);
+    arr[(*size)++] = root->val;
+    inorder(root->right, arr, size);
+}
+
+// The exact function the compiler is looking for
+bool findTarget(struct TreeNode* root, int k) {
+    int* arr = (int*)malloc(10000 * sizeof(int)); // Array to store nodes (adjust size if needed)
+    int size = 0;
+    
+    // Step 1: Flatten the BST into a sorted array
+    inorder(root, arr, &size);
+    
+    // Step 2: Use two pointers to find if any pair sums up to k
+    int left = 0;
+    int right = size - 1;
+    
+    while (left < right) {
+        int current_sum = arr[left] + arr[right];
+        if (current_sum == k) {
+            free(arr);
+            return true;
+        } else if (current_sum < k) {
+            left++;
+        } else {
+            right--;
+        }
+    }
+    
+    free(arr);
+    return false;
+}
