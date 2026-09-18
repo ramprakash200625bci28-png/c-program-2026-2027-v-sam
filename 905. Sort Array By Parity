@@ -1,0 +1,37 @@
+#include <stdlib.h>
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* sortArrayByParity(int* nums, int numsSize, int* returnSize) {
+    *returnSize = numsSize;
+    
+    // Allocate memory for the output array
+    int* result = (int*)malloc(numsSize * sizeof(int));
+    for (int i = 0; i < numsSize; i++) {
+        result[i] = nums[i];
+    }
+    
+    int left = 0;
+    int right = numsSize - 1;
+    
+    while (left < right) {
+        // If left is even, it's already in the correct place; move right
+        if (result[left] % 2 == 0) {
+            left++;
+        }
+        // If right is odd, it's already in the correct place; move left
+        else if (result[right] % 2 != 0) {
+            right--;
+        }
+        // If left is odd and right is even, swap them
+        else {
+            int temp = result[left];
+            result[left] = result[right];
+            result[right] = temp;
+            left++;
+            right--;
+        }
+    }
+    
+    return result;
