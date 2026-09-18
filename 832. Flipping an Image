@@ -1,0 +1,27 @@
+
+int** flipAndInvertImage(int** image, int imageSize, int* imageColSize, int* returnSize, int** returnColumnSizes) {
+    *returnSize = imageSize;
+    *returnColumnSizes = (int*)malloc(imageSize * sizeof(int));
+    int** result = (int**)malloc(imageSize * sizeof(int*));
+    
+    for (int i = 0; i < imageSize; i++) {
+        int cols = imageColSize[i];
+        (*returnColumnSizes)[i] = cols;
+        result[i] = (int*)malloc(cols * sizeof(int));
+        int left = 0;
+        int right = cols - 1;
+        
+        while (left <= right) {
+            if (left == right) {
+                result[i][left] = image[i][left] ^ 1;
+            } else {
+                result[i][left] = image[i][right] ^ 1;
+                result[i][right] = image[i][left] ^ 1;
+            }
+            left++;
+            right--;
+        }
+    }
+    
+    return result;
+}
