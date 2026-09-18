@@ -1,0 +1,25 @@
+#include <stdbool.h>
+#include <string.h>
+
+bool isLongPressedName(char* name, char* typed) {
+    int i = 0; // Pointer for name
+    int j = 0; // Pointer for typed
+    
+    int lenN = strlen(name);
+    int lenT = strlen(typed);
+    
+    while (j < lenT) {
+        // If characters match, move both pointers forward
+        if (i < lenN && name[i] == typed[j]) {
+            i++;
+            j++;
+        }
+        // If they don't match, check if it's a valid long press repeat
+        else if (j > 0 && typed[j] == typed[j - 1]) {
+            j++;
+        }
+        // Character doesn't match and isn't a long press
+        else {
+            return false;
+        }
+    }
