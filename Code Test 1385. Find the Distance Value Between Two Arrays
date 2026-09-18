@@ -1,0 +1,50 @@
+#include <stdlib.h>
+#include <math.h>
+#include <stdbool.h>
+
+// Helper comparison function for qsort
+int compare(const void* a, const void* b) {
+    return (*(int*)a - *(int*)b);
+}
+
+int findTheDistanceValue(int* arr1, int arr1Size, int* arr2, int arr2Size, int d) {
+    // 1. Sort arr2 to enable binary search
+    qsort(arr2, arr2Size, sizeof(int), compare);
+    
+    int distanceValue = 0;
+    
+    // 2. Check each element in arr1
+    for (int i = 0; i < arr1Size; i++) {
+        int val = arr1[i];
+        int low = 0;
+        int high = arr2Size - 1;
+        bool isValid = true;
+        
+        // 3. Binary search for any element in arr2 within distance 'd'
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+            
+            // Found an element within the invalid range
+            if (abs(arr2[mid] - val) <= d) {
+                isValid = false;
+                break;
+            }
+            
+            // If the element is too small, look right
+            if (arr2[mid] < val) {
+                low = mid + 1;
+            } 
+            // If the element is too large, look left
+            else {
+                high = mid - 1;
+            }
+        }
+        
+        // If no element in arr2 was within distance d, increment count
+        if (isValid) {
+            distanceValue++;
+        }
+    }
+    
+    return distanceValue;
+}
