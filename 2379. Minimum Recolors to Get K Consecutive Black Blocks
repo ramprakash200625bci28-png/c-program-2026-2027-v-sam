@@ -1,0 +1,31 @@
+2379. Minimum Recolors to Get K Consecutive Black Blocks
+#include <string.h>
+
+int minimumRecolors(char * blocks, int k) {
+    int len = strlen(blocks);
+    int current_w_count = 0;
+
+    for (int i = 0; i < k; i++) {
+        if (blocks[i] == 'W') {
+            current_w_count++;
+        }
+    }
+
+    int min_w_count = current_w_count;
+
+    for (int i = k; i < len; i++) {
+     
+        if (blocks[i] == 'W') {
+            current_w_count++;
+        }
+        if (blocks[i - k] == 'W') {
+            current_w_count--;
+        }
+
+        if (current_w_count < min_w_count) {
+            min_w_count = current_w_count;
+        }
+    }
+
+    return min_w_count;
+}
