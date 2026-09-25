@@ -1,0 +1,59 @@
+#include <string.h>
+#include <stdbool.h>
+#include <stdlib.h>
+
+// Helper function that finds the bounds of the longest nice substring
+void findNice(char* s, int start, int end, int* max_start, int* max_len) {
+    int len = end - start + 1;
+    if (len < 2) return;
+
+    bool lower[26] = {false};
+    bool upper[26] = {false};
+
+    // Track alphabet presence for the current range
+    for (int i = start; i <= end; i++) {
+        if (s[i] >= 'a' && s[i] <= 'z') lower[s[i] - 'a'] = true;
+        if (s[i] >= 'A' && s[i] <= 'Z') upper[s[i] - 'A'] = true;
+    }
+
+    // Scan for a split point
+    for (int i = start; i <= end; i++) {
+        char c = s[i];
+        bool has_pair = false;
+        if (c >= 'a' && c <= 'z') has_pair = upper[c - 'a'];
+        else if (c >= 'A' && c <= 'Z') has_pair = lower[c - 'A'];
+
+        // If a character breaks the rule, split around it
+        if (!has_pair) {
+            findNice(s, start, i - 1, max_start, max_len);
+            findNice(s, i + 1, end, max_start, max_len);
+            return;
+        }
+    }
+
+    // If the entire segment is valid, check if it beats our max record
+    if (len > *max_len) {
+        *max_start = start;
+        *max_len = len;
+    }
+}
+
+char* longestNiceSubstring(char* s) {
+    int len = strlen(s);
+    int max_start = 0;
+    int max_len = 0;
+
+    findNice(s, 0, len - 1, &max_start, &max_len);
+
+    // If no nice substring exists, return an empty string literal
+    if (max_len == 0) return "";
+
+    // Allocate exact memory for the single final result string
+    char* result = (char*)malloc((max_len + 1) * sizeof(char));
+    strncpy(result, s + max_start, max_len);
+    result[max_len] = '\0';
+
+    return result;
+}
+
+
