@@ -1,0 +1,35 @@
+#include <stdbool.h>
+#include <stdlib.h>
+typedef struct {
+    int val;
+    int idx;
+} NumPair;
+int compare(const void *a, const void *b) {
+    NumPair *p1 = (NumPair *)a;
+    NumPair *p2 = (NumPair *)b;
+    if (p1->val != p2->val) {
+        return (p1->val > p2->val) - (p1->val < p2->val);
+    }
+    return p1->idx - p2->idx;
+}
+
+bool containsNearbyDuplicate(int* nums, int numsSize, int k) {
+    if (numsSize <= 1 || k <= 0) return false;
+    NumPair *pairs = (NumPair *)malloc(numsSize * sizeof(NumPair));
+    for (int i = 0; i < numsSize; i++) {
+        pairs[i].val = nums[i];
+        pairs[i].idx = i;
+    }
+    qsort(pairs, numsSize, sizeof(NumPair), compare);
+    for (int i = 0; i < numsSize - 1; i++) {
+        if (pairs[i].val == pairs[i + 1].val) {
+            if (pairs[i + 1].idx - pairs[i].idx <= k) {
+                free(pairs);
+                return true;
+            }
+        }
+    }
+
+    free(pairs);
+    return false;
+}
