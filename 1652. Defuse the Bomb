@@ -1,0 +1,42 @@
+#include <stdlib.h>
+#include <string.h>
+
+int* decrypt(int* code, int codeSize, int k, int* returnSize) {
+    *returnSize = codeSize;
+    int* result = (int*)malloc(codeSize * sizeof(int));
+    
+    // Case 1: k == 0
+    if (k == 0) {
+        memset(result, 0, codeSize * sizeof(int));
+        return result;
+    }
+    
+    int start = 0, end = 0;
+    
+
+    if (k > 0) {
+        start = 1;
+        end = k;
+    } else {
+        start = codeSize + k;
+        end = codeSize - 1;
+    }
+    
+    int current_sum = 0;
+    for (int i = start; i <= end; i++) {
+        current_sum += code[i % codeSize];
+    }
+    
+   
+    for (int i = 0; i < codeSize; i++) {
+        result[i] = current_sum;
+   
+        current_sum -= code[start % codeSize];
+        start++;
+        end++;
+        current_sum += code[end % codeSize];
+    }
+    
+    return result;
+}
+
