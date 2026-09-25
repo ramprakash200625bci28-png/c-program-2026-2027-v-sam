@@ -1,0 +1,30 @@
+int longestAlternatingSubarray(int* nums, int numsSize, int threshold) {
+    int max_len = 0;
+    int current_len = 0;
+    
+    for (int i = 0; i < numsSize; i++) {
+        // Condition 1: Element exceeds the threshold -> completely reset the window
+        if (nums[i] > threshold) {
+            current_len = 0;
+        } 
+        // Condition 2 & 3: We are inside a valid window and the parity alternates
+        else if (current_len > 0 && (nums[i] % 2 != nums[i - 1] % 2)) {
+            current_len++;
+        } 
+        // Condition 4: The window broke or hasn't started, check if this element can start a new one
+        else {
+            if (nums[i] % 2 == 0) {
+                current_len = 1; // Valid start found (must be even)
+            } else {
+                current_len = 0; // Odd element cannot start a valid subarray
+            }
+        }
+        
+        // Keep track of the longest valid subarray found so far
+        if (current_len > max_len) {
+            max_len = current_len;
+        }
+    }
+    
+    return max_len;
+}
